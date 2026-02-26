@@ -1,88 +1,71 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-plate_length = 1.0                 # длина пластины (м)
-thermal_diffusivity = 1e-4         # коэффициент температуропроводности (м²/с)
-simulation_time = 2.0              # время моделирования (с)
+L = 1.0            # длина пластины
+a = 1e-4       # коэффициент температуропроводности
+T_mod = 2.0      # время моделирования
 
+dt_values = [0.1, 0.01, 0.001, 0.0001]
+dx_values = [0.1, 0.01, 0.001, 0.0001]
 
-time_steps_list = [0.1, 0.01, 0.001, 0.0001] 
-space_steps_list = [0.1, 0.01, 0.001, 0.0001]    
+table = np.zeros((len(dt_values), len(dx_values)))
 
-#Таблица результатов: температура в центре для каждой пары (dt, dx)
-results_table = np.zeros((len(time_steps_list), len(space_steps_list)))
+dt_plot = 0.01
+dx_plot = 0.01
 
+for i_dt, dt in enumerate(dt_values):
+    for i_dx, dx in enumerate(dx_values):
 
-plot_time_step = 0.01
-plot_space_step = 0.01
+        r = a * dt / dx**2
 
-#Перебор всех комбинаций шагов
-for idx_dt, current_dt in enumerate(time_steps_list):
-    for idx_dx, current_dx in enumerate(space_steps_list):
-
-        # Число Фурье (критерий устойчивости явной схемы)
-        fourier_number = thermal_diffusivity * current_dt / current_dx**2
-
-        # Проверка устойчивости: если условие нарушено — пропускаем
-        if fourier_number > 0.5:
-            results_table[idx_dt, idx_dx] = np.nan
+        # Проверка устойчивости
+        if r > 0.5:
+            table[i_dt, i_dx] = np.nan
             continue
 
-        num_nodes = int(plate_length / current_dx) + 1      # количество узлов сетки
-        spatial_grid = np.linspace(0, plate_length, num_nodes)  # координаты узлов
+        nx = int(L / dx) + 1 # кол-во узлов пластины
+        x = np.linspace(0, L, nx)
 
-        #Начальные условия
-        temperature = np.zeros(num_nodes)                   
-        temperature[num_nodes // 2] = 100.0                
+        T = np.zeros(nx)
+        T[nx // 2] = 100.0  # начальный нагрев в центре
 
-        
-        current_time = 0.0
-        while current_time < simulation_time:
-            temperature_new = temperature.copy()
+        t = 0.0
+        while t < T_mod:
+            T_new = T.copy()
 
-            # Конечно-разностная аппроксимация (МКР) для внутренних узлов
-            for node_idx in range(1, num_nodes - 1):
-                temperature_new[node_idx] = (
-                    temperature[node_idx] 
-                    + fourier_number * (
-                        temperature[node_idx + 1] 
-                        - 2 * temperature[node_idx] 
-                        + temperature[node_idx - 1]
-                    )
-                )
+            for j in range(1, nx - 1):
+                T_new[j] = T[j] + r * (T[j+1] - 2*T[j] + T[j-1]) # МКР
 
-            # Граничные условия
-            temperature_new[0] = 0
-            temperature_new[-1] = 0
+            T_new[0] = 0
+            T_new[-1] = 0
 
-            temperature = temperature_new
-            current_time += current_dt
+            T = T_new
+            t += dt
 
-        results_table[idx_dt, idx_dx] = temperature[num_nodes // 2]
+        table[i_dt, i_dx] = T[nx // 2]
 
-        # Сохранение данных для графика при заданных параметрах
-        if current_dt == plot_time_step and current_dx == plot_space_step:
-            temperature_plot = temperature.copy()
-            spatial_grid_plot = spatial_grid.copy()
+        if dt == dt_plot and dx == dx_plot:
+            T_plot = T.copy()
+            x_plot = x.copy()
 
 print("\nТемпература в центре пластины через 2 секунды\n")
 
 print("dt \\ dx", end="\t")
-for dx_val in space_steps_list:
-    print(dx_val, end="\t")
+for dx in dx_values:
+    print(dx, end="\t")
 print()
 
-for i, dt_val in enumerate(time_steps_list):
-    print(dt_val, end="\t")
-    for j in range(len(space_steps_list)):
-        if np.isnan(results_table[i, j]):
+for i, dt in enumerate(dt_values):
+    print(dt, end="\t")
+    for j in range(len(dx_values)):
+        if np.isnan(table[i, j]):
             print("—", end="\t")
         else:
-            print(f"{results_table[i, j]:.2f}", end="\t")
+            print(f"{table[i, j]:.2f}", end="\t")
     print()
 
 plt.figure(figsize=(8, 5))
-plt.plot(spatial_grid_plot, temperature_plot, linewidth=2)
+plt.plot(x_plot, T_plot, linewidth=2)
 plt.xlabel("Координата x, м")
 plt.ylabel("Температура, °C")
 plt.title("Распределение температуры в пластине через 2 с")
