@@ -6,7 +6,7 @@
 
 ### **LCG (линейный конгруэнтный генератор)**  
 
-<img width="303" height="38" alt="image" src="https://github.com/user-attachments/assets/37c432cc-e6e2-4976-865b-2761f39185bf" />
+<img width="303" height="38" alt="image" src="https://github.com/FedorovIgor-creator/simulation-course/blob/main/lab04/562044208-37c432cc-e6e2-4976-865b-2761f39185bf.png" />
 
 Параметры: m=2³², a=1664525, c=1013904223.
 Суть: Рекуррентная линейная формула генерирует детерминированную, но статистически равномерную последовательность на [0,1)
