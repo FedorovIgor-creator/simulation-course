@@ -44,7 +44,7 @@ $$\begin{cases} \pi P = \pi \\ \sum \pi_i = 1 \end{cases}$$
 
 Интерфейс реализован на библиотеке `CustomTkinter` в темной теме.
 image1.jpg
-![alt text]()
+![alt text](image1.jpg)
 **Рисунок 1** — Основное окно программы в процессе моделирования
 
 ---
