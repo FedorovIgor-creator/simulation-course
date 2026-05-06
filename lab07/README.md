@@ -43,8 +43,8 @@ $$\begin{cases} \pi P = \pi \\ \sum \pi_i = 1 \end{cases}$$
 ### 4. Графический интерфейс пользователя
 
 Интерфейс реализован на библиотеке `CustomTkinter` в темной теме.
-
-![alt text](https://github.com/FedorovIgor-creator/simulation-course/blob/main/lab07/image1.jpg)
+https://github.com/FedorovIgor-creator/simulation-course/blob/main/lab07/image1.jpg
+![alt text]()
 **Рисунок 1** — Основное окно программы в процессе моделирования
 
 ---
